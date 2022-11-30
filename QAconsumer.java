@@ -65,6 +65,8 @@ public class qaConsumer {
         while(true) {
             ConsumerRecords<String, String> records  = consumer.poll(Duration.ofMillis(1000));
             for(ConsumerRecord record: records){
+		System.out.println("Record: " + record);
+		System.out.println("Value: " + record.value());
                 System.out.println("Topic: " + record.topic());
                 System.out.println("Key: " + record.key());
                 System.out.println("Partition: " + record.partition());
