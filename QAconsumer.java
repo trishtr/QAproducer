@@ -20,9 +20,9 @@ public class qaConsumer {
 	   
 	    final Logger logger = LogManager.getLogger(qaConsumer.class);
 
-        final String bootstrapServer = "b-2.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
-         		+ "b-4.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
-         		+ "b-1.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098";
+        final String bootstrapServer = "b-2.amazonaws.com:9098,"
+         		+ "b-4.amazonaws.com:9098,"
+         		+ "b-1.amazonaws.com:9098";
 
         //create and populate properties object
         Properties prop = new Properties();
