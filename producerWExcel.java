@@ -21,9 +21,9 @@ public class producerWExcel {
         Properties kafkaProps = new Properties();
        
         //logger.info("Setting up bootstrap server's url");
-         kafkaProps.setProperty("bootstrap.servers","b-2.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
-         		+ "b-4.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
-         		+ "b-1.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098");
+         kafkaProps.setProperty("bootstrap.servers","b-2.amazonaws.com:9098,"
+         		+ "b-4.amazonaws.com:9098,"
+         		+ "b-1.amazonaws.com:9098");
       
      
         logger.info("Setting secutiry protool to SSL");
