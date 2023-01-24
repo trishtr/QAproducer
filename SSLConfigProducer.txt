@@ -1,0 +1,141 @@
+Create a producer using Java to produce messages automatically to Kafka topics
+
+1. Set up the Kafka configuration (bootstrap _servers, key and value serializer)
+
+ Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+
+2. Create Kafka Producer
+
+ KafkaProducer<String, MessageEnvelop> producer = 
+        new KafkaProducer<String, MessageEnvelop>(properties);
+
+3. Create Kafka Record and send message
+
+  ProducerRecord<String, MessageEnvelop> record = new ProducerRecord<String, MessageEnvelop>
+                    ("superSimpleTopic", mess.getClientId(), mess);
+            producer.send(record);
+            producer.flush();
+            producer.close();
+
+4. Check whether messages are successfully sent 
+In the terminal, run cmd : opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic superSimpleTopic --from-beginning
+
+5. Create custom serializer to send data in JSON file format
+6. Create utility files to read data sets in Excel file automatically
+
+
+
+Create and run the producer against Data Platform Kafka cluster
+
+Set up connection to msk_qa EC2 instance
+
+Add public ssh key to msk_qa EC2 instance: (run cmd : cat ~/.ssh/id_rsa.pub to check for public key)
+
+Kafka hosts (bootstrap-servers): 
+
+For TLS (running locally)
+
+b-3.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9094,
+b-2.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9094,
+b-1.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9094
+
+For IAM (running inside msk_qa EC2)
+
+b-3.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,
+b-2.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,
+b-1.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098
+
+Create producer to produce message to desire topics (data platform topics)
+
+(refer to the steps in Create producer using Java to produce messages automatically to Kafka topics) 
+
+Kafka producer SSL configuration: 
+
+Properties kafkaProps = new Properties();
+// kafkaProps.setProperty("bootstrap.servers", config.getBootstrapServer());
+//logger.info("Setting up bootstrap server's url");
+kafkaProps.setProperty("bootstrap.servers","b-2.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
+         + "b-4.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098,"
+         + "b-1.scmoimskuseast1auseas.94rfj5.c25.kafka.us-east-1.amazonaws.com:9098");
+         
+//logger.info("Setting serializer to be org.apache.kafka.common.serialization.StringSerializer");
+kafkaProps.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+//logger.info("Setting value serializer to be org.apache.kafka.common.serialization.StringSerializer ");
+kafkaProps.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+//logger.info("Setting secutiry protool to SSL");
+kafkaProps.setProperty("security.protocol", "SASL_SSL");
+
+//logger.info("Setting sasl mechanism to use IAM");
+kafkaProps.setProperty("sasl.mechanism", "AWS_MSK_IAM");
+
+//logger.info("Setting sasl jass to use Iam module");
+kafkaProps.setProperty("sasl.jaas.config", "software.amazon.msk.auth.iam.IAMLoginModule required;");
+
+//logger.info("setting call back handler provided by amazon");
+kafkaProps.setProperty("sasl.client.callback.handler.class",
+        "software.amazon.msk.auth.iam.IAMClientCallbackHandler");
+
+kafkaProps.setProperty("ssl.truststore.location", "./kafka.client.truststore.jks");
+
+Compile the Java code and copy .jar file to EC2 instance. 
+
+To run the producer :
+
+ssh msk_qa  :  ssh ec2-user@ec2-54-237-176-167.compute-1.amazonaws.com
+
+go to qa_test folder : cd qa_test
+
+run the jar file : java -jar <filename>
+
+Notes: producers inside qa_test folder are currently produce data to raw-hl7 topic
+
+Using Kafka binaries to debug
+
+List of the common commands could be used for debugging and manually test Kafka producer
+
+All kafka binaries .sh files are stored inside kafka/bin folder. 
+
+To run kafka binaries .sh files:
+
+ssh msk_qa: ssh ec2-user@ec2-54-237-176-167.compute-1.amazonaws.com
+
+go to kakfa folder: cd kafka
+
+then run the desired commands listed below: 
+
+
+
+1.List all the topics using kafka-topics.sh :
+
+./bin/kafka-topics.sh --bootstrap-server {server} --command-config ~/config/iam.client.properties --list
+
+2. Create new topic using for testing purpose (specific partition and replication factor are optional): 
+
+./bin/kafka-topics.sh --command-config ~/config/iam.client.properties --create --topic <topicName> --replication-factor 1 --partitions 3
+
+3.Run the kafka-console-consumer.sh to check if the sent messages go through :                
+./bin/kafka-console-consumer.sh --bootstrap-server --consumer.config ~/config/iam.client.properties --topic <topic_name> --from-beginning
+
+4.Run producer manually using kafka-console-producer.sh
+
+./bin/kafka-console-producer.sh --bootstrap-server. --producer.config ~/config/iam.client.properties --topic <topic_name> <messages>
+
+5.Delete the raw-hl7 topic:
+
+./bin/kafka-topics.sh --bootstrap-server --command-config ~/ryo_kafka/config/iam.client.properties --delete --topic raw-hl7
+
+6.Create the raw-hl7 topic:
+
+./bin/kafka-topics.sh --bootstrap-server  --command-config ~/ryo_kafka/config/iam.client.properties --create --topic raw-hl7
+
+7.Check the groupId of consumer for all groups:  
+
+(this command list the information of in-used consumers :  group, topic, partition, current-offset , log-end-offset, lag, consumer-id, host, client-id)
+
+./bin/kafka-consumer-groups.sh --bootstrap-server  --command-config ~/config/iam.client.properties --describe --all-groups
