@@ -1,0 +1,56 @@
+Installing Kafka locally using Docker
+
+Installing Kafka using Docker and docker compose will give us the flexibility to run Kafka on any operating system without making any changes or installing new dependencies.
+
+Prerequisites
+
+Docker must be installed
+
+Docker Compose must be installed
+
+Create docker-compose.yml file and run Kafka container
+
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"  
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"    
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+To start services, run cmd : 
+
+docker-compose -f docker-compose.yml up
+
+
+
+Check if required docker containers are actively running, run cmd: docker ps
+
+
+
+In the Kafka container, check for all .sh files which we need to interact with Kafka server. 
+
+run cmd :  docker exec -it kafka /bin/sh
+
+
+
+Manage Kafka topics using kafka-topics.sh binary
+
+Create new topics
+
+In the Kafka container, run cmd :  #opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic <yourTopicName>
+
+
+
+List all created topics
+
+In the kafka container, run cmd : #opt/kafka/bin/kafka-topics.sh --list --zookeeper zookeeper:2181
