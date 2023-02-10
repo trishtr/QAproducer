@@ -1,0 +1,4 @@
+In MLOps and data science related implementations we have at least 3 things that need to be tested and monitored alone or together:
+1. data (the process of ingesting/collecting data quality)
+2. model (execution, implementation and selection of the appropriate technique)
+3. code (sustainability, accuracy and scalability)
