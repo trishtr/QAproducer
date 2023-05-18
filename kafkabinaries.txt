@@ -1,0 +1,31 @@
+1.List all the topics using kafka-topics.sh :
+
+./bin/kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --list
+
+2. Create new topic using for testing purpose (specific partition and replication factor are optional): 
+
+./bin/kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --create --topic <topicName> --replication-factor 1 --partitions 3
+
+3.Run the kafka-console-consumer.sh to check if the desired messages are successfully sent  manually: 
+
+./bin/kafka-console-consumer.sh --bootstrap-server  $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --topic <topic_name> --from-beginning
+
+4.Run producer manually using kafka-console-producer.sh
+
+./bin/kafka-console-producer.sh --bootstrap-server $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --topic <topic_name> <messages>
+
+5.Delete the raw-hl7 topic:
+
+./bin/kafka-topics.sh --bootstrap-server  $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --delete --topic raw-hl7
+
+6.Create the raw-hl7 topic:
+
+./bin/kafka-topics.sh --bootstrap-server  $BOOTSTRAP_SERVER_URL --command-config ~/kafka_2.13-3.3.1/config/consumer.properties --create --topic raw-hl7
+
+7.Check the groupId of consumer for all groups:  
+
+(this command list the information of in-used consumers :  group, topic, partition, current-offset , log-end-offset, lag, consumer-id, host, client-id)
+
+./bin/kafka-consumer-groups.sh --bootstrap-server $BOOTSTRAP_SERVER_URL --command-config v --describe --all-groups
+
+ 
